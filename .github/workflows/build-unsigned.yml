@@ -1,0 +1,44 @@
+name: Build Blink Shell Unsigned IPA
+
+on:
+  workflow_dispatch: # Cho phép bấm chạy thủ công bất cứ lúc nào
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download frameworks
+        run: |
+          chmod +x ./get_frameworks.sh
+          ./get_frameworks.sh
+
+      - name: Build Xcode Archive (Unsigned)
+        run: |
+          xcodebuild clean archive \
+            -project Blink.xcodeproj \
+            -scheme Blink \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/Blink.xcarchive \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Package Unsigned IPA
+        run: |
+          mkdir -p $RUNNER_TEMP/Payload
+          cp -r $RUNNER_TEMP/Blink.xcarchive/Products/Applications/Blink.app $RUNNER_TEMP/Payload/
+          cd $RUNNER_TEMP
+          zip -r Blink-Community.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Blink-Community-IPA
+          path: ${{ runner.temp }}/Blink-Community.ipa
