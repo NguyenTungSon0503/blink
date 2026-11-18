@@ -1,7 +1,7 @@
 name: Build Blink Shell Unsigned IPA
 
 on:
-  workflow_dispatch: # Cho phép bấm chạy thủ công bất cứ lúc nào
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,6 +17,14 @@ jobs:
         run: |
           chmod +x ./get_frameworks.sh
           ./get_frameworks.sh
+
+      - name: Create developer_setup.xcconfig
+        run: |
+          if [ -f developer_setup.xcconfig.template ]; then
+            cp developer_setup.xcconfig.template developer_setup.xcconfig
+          else
+            touch developer_setup.xcconfig
+          fi
 
       - name: Build Xcode Archive (Unsigned)
         run: |
