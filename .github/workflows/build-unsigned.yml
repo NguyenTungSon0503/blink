@@ -20,11 +20,10 @@ jobs:
 
       - name: Create developer_setup.xcconfig
         run: |
-          if [ -f developer_setup.xcconfig.template ]; then
-            cp developer_setup.xcconfig.template developer_setup.xcconfig
-          else
-            touch developer_setup.xcconfig
-          fi
+          cat <<EOF > developer_setup.xcconfig
+          DEVELOPMENT_TEAM = 
+          PRODUCT_BUNDLE_IDENTIFIER = com.community.blink
+          EOF
 
       - name: Build Xcode Archive (Unsigned)
         run: |
