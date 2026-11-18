@@ -20,10 +20,15 @@ jobs:
 
       - name: Create developer_setup.xcconfig
         run: |
-          cat <<EOF > developer_setup.xcconfig
-          DEVELOPMENT_TEAM = 
-          PRODUCT_BUNDLE_IDENTIFIER = com.community.blink
-          EOF
+          cp template_setup.xcconfig developer_setup.xcconfig
+          sed -i '' \
+            -e 's/^TEAM_ID = .*/TEAM_ID = /' \
+            -e 's/^BUNDLE_ID = .*/BUNDLE_ID = com.community.blink/' \
+            -e 's/^GROUP_ID .*/GROUP_ID = com.community/' \
+            -e 's/^CLOUD_ID = .*/CLOUD_ID = com.community.blink/' \
+            -e 's/^KEYCHAIN_ID1 = .*/KEYCHAIN_ID1 = com.community/' \
+            developer_setup.xcconfig
+          cat developer_setup.xcconfig
 
       - name: Build Xcode Archive (Unsigned)
         run: |
